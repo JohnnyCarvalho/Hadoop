@@ -1,4 +1,4 @@
-package TDE_2.question03;
+package TDE_2.question04;
 
 import TDE_2.question02.Question02;
 import java.io.IOException;
@@ -15,24 +15,24 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.log4j.BasicConfigurator;
 
 /**
- * Questão 03 - Número de transações por categoria.
- * Resultado esperado: lista com o total de transações agrupadas por categoria.
+ * Questão 03 - Número de transações por tipo de fluxo (flow).
+ * Resultado esperado: lista com o total de transações agrupadas por tipo de fluxo (flow).
  * @author Johnny Carvalho
  */
-public class Question03 {
+public class Question04 {
     public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
         BasicConfigurator.configure();
 
         Configuration config = new Configuration();
 
         Path input = new Path("in/data_tde_2.csv");
-        Path output = new Path("output/question03");
+        Path output = new Path("output/question04");
 
-        Job job = Job.getInstance(config, "Número de transações por categoria");
+        Job job = Job.getInstance(config, "Número de transações por tipo de fluxo (flow)");
 
-        job.setJarByClass(Question03.class);
-        job.setMapperClass(Question03.Map.class);
-        job.setReducerClass(Question03.Reduce.class);
+        job.setJarByClass(Question04.class);
+        job.setMapperClass(Question04.Map.class);
+        job.setReducerClass(Question04.Reduce.class);
 
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(IntWritable.class);
@@ -58,8 +58,8 @@ public class Question03 {
             try {
                 String[] columns = line.split(";");
                 if (columns.length > 1) {
-                    String category = columns[9].trim();
-                    context.write(new Text(category), new IntWritable(1));
+                    String flow = columns[4].trim();
+                    context.write(new Text(flow), new IntWritable(1));
                 }
             } catch (Exception e) {
                 System.err.println("Erro ao processar linha: " + line);

@@ -14,8 +14,6 @@ public class BaseQtdWritable implements Writable{
     private String base;
     private Long qtd;
 
-    public BaseQtdWritable() {}
-
     public BaseQtdWritable(String base, Long qtd) {
         this.base = base;
         this.qtd = qtd;

@@ -1,6 +1,5 @@
 package TDE_2.question03;
 
-import TDE_2.question02.Question02;
 import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;

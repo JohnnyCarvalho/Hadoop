@@ -43,7 +43,8 @@ desenvolver soluções em MapReduce capazes de responder as seguintes perguntas:
    tipo exportação (Export) realizadas no Brasil.
 8. (2,0 ponto) Transação com o maior e menor preço (com base na coluna amount), por ano e
    país.
-   Para cada um dos itens acima, forneça:
+
+Para cada um dos itens acima, forneça:
 1. Será necessário retirar o cabeçalho.
 2. Será necessário tratar dados faltantes.
 3. Código fonte para a resolução do problema utilizando MapReduce em Java. ATENÇÃO: não
@@ -88,7 +89,8 @@ desenvolver soluções em MapReduce capazes de responder as seguintes perguntas:
    transactions conducted in Brazil.
 8. (2.0 points) Transaction with the highest and lowest price (based on the amount column), per
    year and country.
-   For each of the above items, provide:
+
+For each of the above items, provide:
 1. The header must be removed.
 2. Missing data must be handled.
 3. Source code to solve the problem using MapReduce in Java. ATTENTION: solutions that

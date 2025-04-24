@@ -5,13 +5,13 @@ import java.io.DataOutput;
 import java.io.IOException;
 import org.apache.hadoop.io.Writable;
 
-public class CustomMapReturn implements Writable {
+public class CustomQuestion05 implements Writable {
     private double soma;
     private int contagem;
 
-    public CustomMapReturn() {}
+    public CustomQuestion05() {}
 
-    public CustomMapReturn(double soma, int contagem) {
+    public CustomQuestion05(double soma, int contagem) {
         this.soma = soma;
         this.contagem = contagem;
     }
@@ -28,11 +28,11 @@ public class CustomMapReturn implements Writable {
         contagem = in.readInt();
     }
 
-    public double getSoma() { return soma; }
+    protected double getSoma() { return soma; }
 
-    public int getContagem() { return contagem; }
+    protected int getContagem() { return contagem; }
 
-    public void add(CustomMapReturn other) {
+    protected void add(CustomQuestion05 other) {
         this.soma += other.soma;
         this.contagem += other.contagem;
     }

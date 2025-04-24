@@ -35,7 +35,7 @@ public class Question05 {
         job1.setReducerClass(Question05.ReduceAverageTransactions.class);
 
         job1.setMapOutputKeyClass(IntWritable.class);
-        job1.setMapOutputValueClass(CustomMapReturn.class);
+        job1.setMapOutputValueClass(CustomQuestion05.class);
 
         job1.setOutputKeyClass(IntWritable.class);
         job1.setOutputValueClass(DoubleWritable.class);
@@ -53,39 +53,42 @@ public class Question05 {
      * Class with the map method to process the input data
      * where the key is the country and the value is the quantity of transactions.
      */
-    public static class MapAverageTransactions extends Mapper<LongWritable, Text, IntWritable, CustomMapReturn> {
+    public static class MapAverageTransactions extends Mapper<LongWritable, Text, IntWritable, CustomQuestion05> {
         private final IntWritable yearKey = new IntWritable();
 
         public void map(final LongWritable key, final Text value, final Context context) throws IOException, InterruptedException {
             final String[] columns = value.toString().split(";");
+            final String country = columns[0].trim();
+            final String yearStr = columns[1].trim();
+            final String valueStr = columns[5].trim();
+            final String line = value.toString();
+            if (line.toLowerCase().contains("country_or_area")) {
+                return;
+            }
 
-            if (columns.length > 5) {
-                final String country = columns[0].trim();
-                final String yearStr = columns[1].trim();
-                final String valueStr = columns[5].trim();
+            if (!country.equals("Brazil")) {
+                return;
+            }
 
-                if (country.equals("Brazil")) {
-                    try {
-                        final int year = Integer.parseInt(yearStr);
-                        final double transactionValue = Double.parseDouble(valueStr.replace(",", "."));
-                        yearKey.set(year);
-                        context.write(yearKey, new CustomMapReturn(transactionValue, 1));
-                    } catch (NumberFormatException e) {
-                        // ignora linha inválida
-                    }
-                }
+            try {
+                final int year = Integer.parseInt(yearStr);
+                final double transactionValue = Double.parseDouble(valueStr.replace(",", "."));
+                yearKey.set(year);
+                context.write(yearKey, new CustomQuestion05(transactionValue, 1));
+            } catch (NumberFormatException e) {
+                System.out.println("Erro ao converter valor: " + e.getMessage());
             }
         }
     }
 
-    public static class ReduceAverageTransactions extends Reducer<IntWritable, CustomMapReturn, IntWritable, Text> {
-        public void reduce(final IntWritable key, final Iterable<CustomMapReturn> values, final Context context)
+    public static class ReduceAverageTransactions extends Reducer<IntWritable, CustomQuestion05, IntWritable, Text> {
+        public void reduce(final IntWritable key, final Iterable<CustomQuestion05> values, final Context context)
                 throws IOException, InterruptedException {
 
             double somaTotal = 0;
             int totalCount = 0;
 
-            for (CustomMapReturn val : values) {
+            for (CustomQuestion05 val : values) {
                 somaTotal += val.getSoma();
                 totalCount += val.getContagem();
             }

@@ -20,8 +20,6 @@ import org.apache.log4j.BasicConfigurator;
  * @author Johnny Carvalho
  * @version 1.0
  * @since 2025-04-15
- *
- * Task - create a MapReduce program to count the number of transactions involving Brazil.
  */
 public class Question01 {
     public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
@@ -29,10 +27,10 @@ public class Question01 {
 
         Configuration config = new Configuration();
 
-        Path input = new Path("in/data_tde_2.csv");
-        Path output = new Path("output/question01");
+        final Path input = new Path("in/data_tde_2.csv");
+        final Path output = new Path("output/question01");
 
-        Job job = Job.getInstance(config, "Transações envolvendo o Brasil");
+        final Job job = Job.getInstance(config, "Transações envolvendo o Brasil");
 
         job.setJarByClass(Question01.class);
         job.setMapperClass(Map.class);
@@ -44,31 +42,26 @@ public class Question01 {
         FileInputFormat.addInputPath(job, input);
         FileOutputFormat.setOutputPath(job, output);
 
-        boolean success = job.waitForCompletion(true);
+        final boolean success = job.waitForCompletion(true);
         System.out.println("Job finalizado com sucesso? " + success);
         System.exit(success ? 0 : 1);
     }
 
-    /**
-     * Class with the map method to process the input data.
-     */
     public static class Map extends Mapper<LongWritable, Text, Text, IntWritable> {
-        public void map(LongWritable key, Text value, Context context)
+        public void map(final LongWritable key, final Text value, final Context context)
                 throws IOException, InterruptedException {
 
-            String line = value.toString();
+            final String line = value.toString();
 
             if (line.toLowerCase().contains("country_or_area")) {
                 return;
             }
 
             try {
-                String[] columns = line.split(";");
-                if (columns.length > 0) {
-                    String country = columns[0].trim();
-                    if (country.equalsIgnoreCase("Brazil")) {
-                        context.write(new Text("BRAZIL"), new IntWritable(1));
-                    }
+                final String[] columns = line.split(";");
+                final String country = columns[0].trim();
+                if (country.equalsIgnoreCase("Brazil")) {
+                    context.write(new Text("BRAZIL"), new IntWritable(1));
                 }
             } catch (Exception e) {
                 System.err.println("Erro ao processar linha: " + line);
@@ -77,11 +70,8 @@ public class Question01 {
         }
     }
 
-    /**
-     * Class with the reduce method to process the intermediate data.
-     */
     public static class Reduce extends Reducer<Text, IntWritable, Text, IntWritable> {
-        public void reduce(Text key, Iterable<IntWritable> values, Context context)
+        public void reduce(final Text key, final Iterable<IntWritable> values, final Context context)
                 throws IOException, InterruptedException {
 
             int sum = 0;

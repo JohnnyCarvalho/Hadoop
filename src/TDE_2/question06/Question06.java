@@ -22,10 +22,10 @@ public class Question06 {
         BasicConfigurator.configure();
         Configuration config = new Configuration();
 
-        Path input = new Path("in/data_tde_2.csv");
-        Path output = new Path("output/question06");
+        final Path input = new Path("in/data_tde_2.csv");
+        final Path output = new Path("output/question06");
 
-        Job job = Job.getInstance(config, "Transação mais cara e mais barata no Brasil em 2016");
+        final Job job = Job.getInstance(config, "Transação mais cara e mais barata no Brasil em 2016");
 
         job.setJarByClass(Question06.class);
         job.setMapperClass(MapTransactionExtremes.class);
@@ -41,32 +41,30 @@ public class Question06 {
     }
 
     public static class MapTransactionExtremes extends Mapper<LongWritable, Text, Text, Text> {
-        public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-            String line = value.toString();
+        public void map(final LongWritable key, final Text value, final Context context) throws IOException, InterruptedException {
+            final String line = value.toString();
             if (line.startsWith("country_or_area")) {
                 return;
             }
-            String[] fields = value.toString().split(";");
-            if (fields.length > 5) {
-                String country = fields[0].trim();
-                String yearStr = fields[1].trim();
-                String valueStr = fields[5].trim();
+            final String[] fields = value.toString().split(";");
+            final String country = fields[0].trim();
+            final String yearStr = fields[1].trim();
+            String valueStr = fields[5].trim();
 
-                if (country.equalsIgnoreCase("Brazil") && yearStr.equals("2016")) {
-                    try {
-                        valueStr = valueStr.replace(".", "").replace(",", ".");
-                        double valor = Double.parseDouble(valueStr);
-                        context.write(new Text(yearStr), new Text(String.valueOf(valor)));
-                    } catch (NumberFormatException e) {
-                        System.out.println("Erro ao converter valor: " + e.getMessage());
-                    }
+            if (country.equalsIgnoreCase("Brazil") && yearStr.equals("2016")) {
+                try {
+                    valueStr = valueStr.replace(".", "").replace(",", ".");
+                    final double valor = Double.parseDouble(valueStr);
+                    context.write(new Text(yearStr), new Text(String.valueOf(valor)));
+                } catch (NumberFormatException e) {
+                    System.out.println("Erro ao converter valor: " + e.getMessage());
                 }
             }
         }
     }
 
     public static class ReduceTransactionExtremes extends Reducer<Text, Text, Text, Text> {
-        public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+        public void reduce(final Text key, final Iterable<Text> values, final Context context) throws IOException, InterruptedException {
             double min = Double.MAX_VALUE;
             double max = Double.MIN_VALUE;
 

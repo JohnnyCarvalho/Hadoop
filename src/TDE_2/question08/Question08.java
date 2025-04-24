@@ -20,12 +20,12 @@ public class Question08 {
         BasicConfigurator.configure();
         Configuration config = new Configuration();
 
-        Path input = new Path("in/data_tde_2.csv");
-        Path output = new Path("output/question08");
-        Path intermediateMin = new Path("output/intermediate/question08_min");
-        Path intermediateMax = new Path("output/intermediate/question08_max");
+        final Path input = new Path("in/data_tde_2.csv");
+        final Path output = new Path("output/question08");
+        final Path intermediateMin = new Path("output/intermediate/question08_min");
+        final Path intermediateMax = new Path("output/intermediate/question08_max");
 
-        Job job1 = Job.getInstance(config, "Transação mínima por ano e país");
+        final Job job1 = Job.getInstance(config, "Transação mínima por ano e país");
         job1.setJarByClass(Question08.class);
         job1.setMapperClass(MapTransactionMin.class);
         job1.setReducerClass(ReduceTransactionMin.class);
@@ -36,7 +36,7 @@ public class Question08 {
         FileInputFormat.addInputPath(job1, input);
         FileOutputFormat.setOutputPath(job1, intermediateMin);
 
-        Job job2 = Job.getInstance(config, "Transação máxima por ano e país");
+        final Job job2 = Job.getInstance(config, "Transação máxima por ano e país");
         job2.setJarByClass(Question08.class);
         job2.setMapperClass(MapTransactionMax.class);
         job2.setReducerClass(ReduceTransactionMax.class);
@@ -47,7 +47,7 @@ public class Question08 {
         FileInputFormat.addInputPath(job2, input);
         FileOutputFormat.setOutputPath(job2, intermediateMax);
 
-        Job job3 = Job.getInstance(config, "Transações mínimas e máximas consolidadas");
+        final Job job3 = Job.getInstance(config, "Transações mínimas e máximas consolidadas");
         job3.setJarByClass(Question08.class);
         job3.setMapperClass(MapTransactionOutput.class);
         job3.setReducerClass(ReduceTransactionOutput.class);
@@ -68,23 +68,21 @@ public class Question08 {
     }
 
     public static class MapTransactionMin extends Mapper<LongWritable, Text, CountryYearWritable, DoubleWritable> {
-        public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+        public void map(final LongWritable key, final Text value, final Context context) throws IOException, InterruptedException {
             if (value.toString().startsWith("country_or_area")) return;
-            String[] parts = value.toString().split(";");
-            if (parts.length > 5) {
-                String country = parts[0].trim();
-                String year = parts[1].trim();
-                String tradeUsd = parts[5].trim().replace(".", "").replace(",", ".");
-                try {
-                    double amount = Double.parseDouble(tradeUsd);
-                    context.write(new CountryYearWritable(country, year), new DoubleWritable(amount));
-                } catch (NumberFormatException ignored) {}
-            }
+            final String[] parts = value.toString().split(";");
+            final String country = parts[0].trim();
+            final String year = parts[1].trim();
+            final String tradeUsd = parts[5].trim().replace(".", "").replace(",", ".");
+            try {
+                final double amount = Double.parseDouble(tradeUsd);
+                context.write(new CountryYearWritable(country, year), new DoubleWritable(amount));
+            } catch (NumberFormatException ignored) {}
         }
     }
 
     public static class ReduceTransactionMin extends Reducer<CountryYearWritable, DoubleWritable, CountryYearWritable, DoubleWritable> {
-        public void reduce(CountryYearWritable key, Iterable<DoubleWritable> values, Context context) throws IOException, InterruptedException {
+        public void reduce(final CountryYearWritable key, final Iterable<DoubleWritable> values, final Context context) throws IOException, InterruptedException {
             double min = Double.MAX_VALUE;
             for (DoubleWritable val : values) {
                 min = Math.min(min, val.get());
@@ -94,23 +92,21 @@ public class Question08 {
     }
 
     public static class MapTransactionMax extends Mapper<LongWritable, Text, CountryYearWritable, DoubleWritable> {
-        public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+        public void map(final LongWritable key, final Text value, final Context context) throws IOException, InterruptedException {
             if (value.toString().startsWith("country_or_area")) return;
-            String[] parts = value.toString().split(";");
-            if (parts.length > 5) {
-                String country = parts[0].trim();
-                String year = parts[1].trim();
-                String tradeUsd = parts[5].trim().replace(".", "").replace(",", ".");
-                try {
-                    double amount = Double.parseDouble(tradeUsd);
-                    context.write(new CountryYearWritable(country, year), new DoubleWritable(amount));
-                } catch (NumberFormatException ignored) {}
-            }
+            final String[] parts = value.toString().split(";");
+            final String country = parts[0].trim();
+            final String year = parts[1].trim();
+            final String tradeUsd = parts[5].trim().replace(".", "").replace(",", ".");
+            try {
+                double amount = Double.parseDouble(tradeUsd);
+                context.write(new CountryYearWritable(country, year), new DoubleWritable(amount));
+            } catch (NumberFormatException ignored) {}
         }
     }
 
     public static class ReduceTransactionMax extends Reducer<CountryYearWritable, DoubleWritable, CountryYearWritable, DoubleWritable> {
-        public void reduce(CountryYearWritable key, Iterable<DoubleWritable> values, Context context) throws IOException, InterruptedException {
+        public void reduce(final CountryYearWritable key, final Iterable<DoubleWritable> values, final Context context) throws IOException, InterruptedException {
             double max = Double.MIN_VALUE;
             for (DoubleWritable val : values) {
                 max = Math.max(max, val.get());
@@ -120,8 +116,8 @@ public class Question08 {
     }
 
     public static class MapTransactionOutput extends Mapper<LongWritable, Text, CountryYearWritable, Text> {
-        public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-            String[] parts = value.toString().split("\t");
+        public void map(final LongWritable key, final Text value, final Context context) throws IOException, InterruptedException {
+            final String[] parts = value.toString().split("\t");
             if (parts.length == 3) {
                 CountryYearWritable k = new CountryYearWritable(parts[0], parts[1]);
                 context.write(k, new Text(parts[2]));
@@ -130,17 +126,17 @@ public class Question08 {
     }
 
     public static class ReduceTransactionOutput extends Reducer<CountryYearWritable, Text, CountryYearWritable, CustomQuestion08> {
-        public void reduce(CountryYearWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+        public void reduce(final CountryYearWritable key, final Iterable<Text> values, final Context context) throws IOException, InterruptedException {
             double min = Double.MAX_VALUE;
             double max = Double.MIN_VALUE;
             for (Text val : values) {
                 try {
-                    double v = Double.parseDouble(val.toString());
+                    final double v = Double.parseDouble(val.toString());
                     if (v < min) min = v;
                     if (v > max) max = v;
                 } catch (NumberFormatException ignored) {}
             }
-            CustomQuestion08 result = new CustomQuestion08(key.getCountry(), key.getYear(), min, max);
+            final CustomQuestion08 result = new CustomQuestion08(key.getCountry(), key.getYear(), min, max);
             context.write(key, result);
         }
     }

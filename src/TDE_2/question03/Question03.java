@@ -24,10 +24,10 @@ public class Question03 {
 
         Configuration config = new Configuration();
 
-        Path input = new Path("in/data_tde_2.csv");
-        Path output = new Path("output/question03");
+        final Path input = new Path("in/data_tde_2.csv");
+        final Path output = new Path("output/question03");
 
-        Job job = Job.getInstance(config, "Número de transações por categoria");
+        final Job job = Job.getInstance(config, "Número de transações por categoria");
 
         job.setJarByClass(Question03.class);
         job.setMapperClass(Question03.Map.class);
@@ -39,27 +39,25 @@ public class Question03 {
         FileInputFormat.addInputPath(job, input);
         FileOutputFormat.setOutputPath(job, output);
 
-        boolean success = job.waitForCompletion(true);
+        final boolean success = job.waitForCompletion(true);
         System.out.println("Job finalizado com sucesso? " + success);
         System.exit(success ? 0 : 1);
     }
 
     public static class Map extends Mapper<LongWritable, Text, Text, IntWritable> {
-        public void map(LongWritable key, Text value, Context context)
+        public void map(final LongWritable key, final Text value, final Context context)
                 throws IOException, InterruptedException {
 
-            String line = value.toString();
+            final String line = value.toString();
 
             if (line.toLowerCase().contains("country_or_area")) {
                 return;
             }
 
             try {
-                String[] columns = line.split(";");
-                if (columns.length > 1) {
-                    String category = columns[9].trim();
-                    context.write(new Text(category), new IntWritable(1));
-                }
+                final String[] columns = line.split(";");
+                final String category = columns[9].trim();
+                context.write(new Text(category), new IntWritable(1));
             } catch (Exception e) {
                 System.err.println("Erro ao processar linha: " + line);
                 e.printStackTrace();
@@ -68,7 +66,7 @@ public class Question03 {
     }
 
     public static class Reduce extends Reducer<Text, IntWritable, Text, IntWritable> {
-        public void reduce(Text key, Iterable<IntWritable> values, Context context)
+        public void reduce(final Text key, final Iterable<IntWritable> values, final Context context)
                 throws IOException, InterruptedException {
 
             int sum = 0;

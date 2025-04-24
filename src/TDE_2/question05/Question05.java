@@ -28,23 +28,23 @@ public class Question05 {
         final Path input = new Path("in/data_tde_2.csv");
         final Path output = new Path("output/question05");
 
-        final Job job1 = Job.getInstance(config, "Quantidade de transações envolvendo o Brasil");
+        final Job job = Job.getInstance(config, "Quantidade de transações envolvendo o Brasil");
 
-        job1.setJarByClass(Question05.class);
-        job1.setMapperClass(Question05.MapAverageTransactions.class);
-        job1.setReducerClass(Question05.ReduceAverageTransactions.class);
+        job.setJarByClass(Question05.class);
+        job.setMapperClass(Question05.MapAverageTransactions.class);
+        job.setReducerClass(Question05.ReduceAverageTransactions.class);
 
-        job1.setMapOutputKeyClass(IntWritable.class);
-        job1.setMapOutputValueClass(CustomQuestion05.class);
+        job.setMapOutputKeyClass(IntWritable.class);
+        job.setMapOutputValueClass(CustomQuestion05.class);
 
-        job1.setOutputKeyClass(IntWritable.class);
-        job1.setOutputValueClass(DoubleWritable.class);
+        job.setOutputKeyClass(IntWritable.class);
+        job.setOutputValueClass(DoubleWritable.class);
 
 
-        FileInputFormat.addInputPath(job1, input);
-        FileOutputFormat.setOutputPath(job1, output);
+        FileInputFormat.addInputPath(job, input);
+        FileOutputFormat.setOutputPath(job, output);
 
-        final boolean success = job1.waitForCompletion(true);
+        final boolean success = job.waitForCompletion(true);
         System.out.println("Job finalizado com sucesso? " + success);
         System.exit(success ? 0 : 1);
     }

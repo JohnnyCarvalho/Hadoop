@@ -27,7 +27,7 @@ public class EntropyFASTA {
         Path intermediate = new Path("./output/intermediate.tmp");
 
         // arquivo de saida
-        Path output = new Path("output/fastaEntropy.txt");
+        Path output = new Path("output/fastaEntropy");
 
         Job j1 = new Job(c, "etapa A");
         Job j2 = new Job(c, "etapa B");

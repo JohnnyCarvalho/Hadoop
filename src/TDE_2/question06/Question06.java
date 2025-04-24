@@ -12,6 +12,11 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.log4j.BasicConfigurator;
 
+/**
+ * Questão 06 - Transação mais cara e mais barata no Brasil em 2016.
+ * Resultado esperado: lista com o total de transações agrupadas por categoria.
+ * @author Johnny Carvalho
+ */
 public class Question06 {
     public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
         BasicConfigurator.configure();
@@ -36,8 +41,6 @@ public class Question06 {
     }
 
     public static class MapTransactionExtremes extends Mapper<LongWritable, Text, Text, Text> {
-        private final static Text outKey = new Text("Transacoes_Brasil_2016");
-
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             String line = value.toString();
             if (line.startsWith("country_or_area")) {
@@ -53,7 +56,7 @@ public class Question06 {
                     try {
                         valueStr = valueStr.replace(".", "").replace(",", ".");
                         double valor = Double.parseDouble(valueStr);
-                        context.write(outKey, new Text(String.format("%.4f", valor)));
+                        context.write(new Text(yearStr), new Text(String.valueOf(valor)));
                     } catch (NumberFormatException e) {
                         System.out.println("Erro ao converter valor: " + e.getMessage());
                     }
@@ -73,12 +76,12 @@ public class Question06 {
                     if (value < min) min = value;
                     if (value > max) max = value;
                 } catch (NumberFormatException e) {
-                    // ignora valores inválidos
+                    System.out.println("Erro ao converter valor: " + e.getMessage());
                 }
             }
 
-            context.write(new Text("Transaction min"), new Text(String.valueOf(min)));
-            context.write(new Text("Transaction max"), new Text(String.valueOf(max)));
+            context.write(new Text("Brazil\t2016\tTransaction min\t"), new Text(String.valueOf(min)));
+            context.write(new Text("Brazil\t2016\tTransaction max\t"), new Text(String.valueOf(max)));
         }
     }
 }
